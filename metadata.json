@@ -1,0 +1,6 @@
+{
+  "name": "Ceylon Rail",
+  "description": "Premier mobile application for Sri Lanka Railways with offline timetable, fare calculator, interactive route map, SLR history, and AI travel planner.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+/* High-contrast dark mode for night-time rail travel */
+html.night-rail {
+  color-scheme: dark;
+}
+
+html.night-rail body {
+  background-color: #0A120D;
+  color: #EDF4EE;
+}
+
+/* Night Rail Mode Component Overrides */
+html.night-rail .bg-\[\#F4F0EA\] {
+  background-color: #0B140F !important;
+  color: #EEF5EF !important;
+}
+
+html.night-rail .bg-\[\#FAF7F2\],
+html.night-rail .bg-\[\#FDFBF7\] {
+  background-color: #121F17 !important;
+  border-color: #274233 !important;
+  color: #ECF4EE !important;
+}
+
+html.night-rail .bg-\[\#F2ECE0\],
+html.night-rail .bg-\[\#F2ECE1\],
+html.night-rail .bg-\[\#ECE7DC\],
+html.night-rail .bg-\[\#EAE4D7\],
+html.night-rail .bg-\[\#EDE7DA\] {
+  background-color: #182A20 !important;
+  border-color: #2F4D3C !important;
+  color: #E2ECE5 !important;
+}
+
+html.night-rail .bg-\[\#DDD5C5\],
+html.night-rail .bg-\[\#DCD4C3\] {
+  background-color: #23392D !important;
+  border-color: #385B47 !important;
+  color: #E2ECE5 !important;
+}
+
+html.night-rail .text-\[\#1F2923\],
+html.night-rail .text-\[\#2C2925\],
+html.night-rail .text-\[\#2D2A26\],
+html.night-rail .text-\[\#3B3833\],
+html.night-rail .text-\[\#3A3731\] {
+  color: #F1F7F3 !important;
+}
+
+html.night-rail .text-\[\#5A5751\],
+html.night-rail .text-\[\#6E685D\],
+html.night-rail .text-\[\#7A756D\],
+html.night-rail .text-\[\#69655E\],
+html.night-rail .text-\[\#4E4B45\] {
+  color: #A3BDAD !important;
+}
+
+html.night-rail .border-\[\#DFD5C2\],
+html.night-rail .border-\[\#E0D7C6\],
+html.night-rail .border-\[\#D5CAA4\],
+html.night-rail .border-\[\#D9D0BE\],
+html.night-rail .border-\[\#D5CCB8\],
+html.night-rail .border-\[\#C8C0AF\] {
+  border-color: #2B4536 !important;
+}
+
+html.night-rail .placeholder-\[\#9B9588\]::placeholder {
+  color: #728D7E !important;
+}
+
+/* Pulse animation for delayed live status */
+@keyframes delayedPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.6);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 0 0 6px rgba(245, 158, 11, 0);
+  }
+}
+
+.animate-delay-pulse {
+  animation: delayedPulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Subtle fade transition effect for view switching */
+@keyframes viewFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-view-fade {
+  animation: viewFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
