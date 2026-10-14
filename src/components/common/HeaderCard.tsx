@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Train,
   CloudSun,
@@ -11,6 +11,12 @@ import {
   Moon,
   Sun,
   Navigation,
+  Download,
+  Copy,
+  Check,
+  X,
+  ShieldCheck,
+  ExternalLink,
 } from 'lucide-react';
 import { Language, AppTheme } from '../../types';
 import { translations } from '../../data/localization';
@@ -45,6 +51,16 @@ export const HeaderCard: React.FC<HeaderCardProps> = ({
   const t = translations[language];
   const activeWeather = LIVE_WEATHER_ALERTS[0]; // Colombo Fort
   const isDelayed = delayState !== 'ON_TIME';
+
+  const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyLogoUrl = () => {
+    const fullUrl = window.location.origin + '/logo.png';
+    navigator.clipboard.writeText(fullUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <header className="relative w-full bg-[#173024] text-[#F4F0EA] border-b border-[#2A4B3A] shadow-md transition-colors">
@@ -140,17 +156,42 @@ export const HeaderCard: React.FC<HeaderCardProps> = ({
         {/* Main Header Branding & Actions */}
         <div className="pt-3.5 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-[#244A38] to-[#12241C] border border-[#3E6B52] flex items-center justify-center shadow-inner text-[#D4A359]">
-              <Train className="w-6 h-6" />
-            </div>
+            {/* Official Public Logo Badge */}
+            <button
+              type="button"
+              onClick={() => setIsLogoModalOpen(true)}
+              className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-[#12241C] border border-[#D4A359]/60 p-0.5 shadow-md flex items-center justify-center overflow-hidden shrink-0 group transition-transform hover:scale-105 active:scale-95 cursor-pointer"
+              title="Ceylon Rail Official Public Logo - Click to view & download brand assets"
+            >
+              <img
+                src="/logo.png"
+                alt="Ceylon Rail Public Logo"
+                className="w-full h-full object-cover rounded-[10px] group-hover:brightness-110 transition-all"
+                referrerPolicy="no-referrer"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  const fallback = e.currentTarget.parentElement?.querySelector('.logo-fallback');
+                  if (fallback) (fallback as HTMLElement).style.display = 'flex';
+                }}
+              />
+              <div className="logo-fallback hidden w-full h-full items-center justify-center text-[#D4A359]">
+                <Train className="w-6 h-6" />
+              </div>
+            </button>
+
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl sm:text-2xl font-serif font-bold tracking-wide text-[#F4F0EA]">
                   {t.appName}
                 </h1>
-                <span className="text-[10px] uppercase tracking-wider font-mono bg-[#D4A359]/20 text-[#E7C286] border border-[#D4A359]/30 px-1.5 py-0.5 rounded">
+                <button
+                  type="button"
+                  onClick={() => setIsLogoModalOpen(true)}
+                  className="text-[10px] uppercase tracking-wider font-mono bg-[#D4A359]/20 text-[#E7C286] hover:bg-[#D4A359]/30 border border-[#D4A359]/30 px-1.5 py-0.5 rounded transition-colors"
+                  title="View Public Emblem & Heritage Badge"
+                >
                   SLR 1864
-                </span>
+                </button>
               </div>
               <p className="text-xs text-[#A7BCB0] font-sans">
                 {t.tagline}
@@ -200,6 +241,132 @@ export const HeaderCard: React.FC<HeaderCardProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Official Public Logo & Brand Assets Modal */}
+      {isLogoModalOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 bg-[#0A1610]/80 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn"
+          onClick={() => setIsLogoModalOpen(false)}
+        >
+          <div
+            className="bg-[#FAF7F2] text-[#173024] rounded-2xl max-w-md w-full border border-[#D5CAA4] shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="bg-[#173024] text-[#F4F0EA] px-5 py-4 flex items-center justify-between border-b border-[#2C4F3D]">
+              <div className="flex items-center gap-2.5">
+                <ShieldCheck className="w-5 h-5 text-[#D4A359]" />
+                <div>
+                  <h3 className="font-serif font-bold text-base tracking-wide text-white">
+                    Ceylon Rail Official Logo
+                  </h3>
+                  <p className="text-[11px] text-[#A7C2B3]">
+                    Public Identity & Brand Assets (Est. 1864)
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsLogoModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-[#234534] hover:bg-[#2F5A44] text-[#C5D9CE] hover:text-white flex items-center justify-center transition-colors"
+                title="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-5 space-y-4">
+              {/* Logo Preview Stage */}
+              <div className="flex flex-col items-center justify-center py-4 bg-gradient-to-b from-[#EFE9DC] to-[#E5DEC8] rounded-xl border border-[#D8CEB8]">
+                <div className="relative w-36 h-36 rounded-2xl bg-[#12241C] p-1.5 shadow-xl border-2 border-[#D4A359]">
+                  <img
+                    src="/logo.png"
+                    alt="Ceylon Rail Public Logo"
+                    className="w-full h-full object-cover rounded-xl"
+                    referrerPolicy="no-referrer"
+                  />
+                </div>
+                <span className="text-xs font-serif font-bold text-[#173024] mt-3">
+                  Ceylon Rail Heritage Emblem
+                </span>
+                <span className="text-[10px] text-[#6E685D] font-mono mt-0.5">
+                  Vector Broad-Gauge Locomotive & Viaduct Crest
+                </span>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <a
+                  href="/logo.png"
+                  download="ceylon-rail-logo.png"
+                  className="flex items-center justify-center gap-2 bg-[#173024] hover:bg-[#234534] text-white py-2 px-3 rounded-xl text-xs font-semibold shadow-xs transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5 text-[#D4A359]" />
+                  <span>Download Logo (PNG)</span>
+                </a>
+
+                <button
+                  type="button"
+                  onClick={handleCopyLogoUrl}
+                  className="flex items-center justify-center gap-2 bg-[#EAE2D2] hover:bg-[#DDD3BF] text-[#173024] py-2 px-3 rounded-xl text-xs font-semibold border border-[#C5BBA7] transition-colors"
+                >
+                  {copied ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      <span className="text-emerald-700">URL Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5 text-[#758A80]" />
+                      <span>Copy Public URL</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Public URL Direct Bridge */}
+              <div className="bg-[#FAF7F2] p-2.5 rounded-lg border border-[#DDD3BF] text-[11px] flex items-center justify-between gap-2">
+                <span className="font-mono text-[#544E45] truncate">
+                  /logo.png
+                </span>
+                <a
+                  href="/logo.png"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#758A80] hover:text-[#173024] flex items-center gap-1 font-medium shrink-0"
+                >
+                  <span>Open raw</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+
+              {/* Brand Palette Spec */}
+              <div className="pt-2 border-t border-[#E2D9C5] space-y-2">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#6E685D] block">
+                  Official Brand Colors
+                </span>
+                <div className="grid grid-cols-3 gap-2 text-center text-[10px]">
+                  <div className="bg-[#173024] text-white p-2 rounded-lg font-mono">
+                    <div className="font-bold">#173024</div>
+                    <div className="text-[9px] text-[#A7C2B3]">Ceylon Green</div>
+                  </div>
+                  <div className="bg-[#D4A359] text-[#12241C] p-2 rounded-lg font-mono">
+                    <div className="font-bold">#D4A359</div>
+                    <div className="text-[9px] text-[#423114]">Loco Brass</div>
+                  </div>
+                  <div className="bg-[#FAF7F2] text-[#173024] p-2 rounded-lg font-mono border border-[#DDD3BF]">
+                    <div className="font-bold">#FAF7F2</div>
+                    <div className="text-[9px] text-[#6E685D]">Parchment</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

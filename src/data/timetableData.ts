@@ -757,7 +757,7 @@ export const LEGENDARY_TRAINS: LegendaryTrainProfile[] = [
       'Crosses the Demodara Nine Arch Viaduct with panoramic photo stops',
       'Features 1st Observation Saloon with rear-facing picture windows',
     ],
-    imageUrl: 'https://images.unsplash.com/photo-1588668214407-6ea9a6d8c272?q=80&w=800&auto=format&fit=crop',
+    imageUrl: '/images/podimenikkei.jpeg',
   },
   {
     id: 'udarata-menike',
@@ -773,7 +773,7 @@ export const LEGENDARY_TRAINS: LegendaryTrainProfile[] = [
       'Connects Colombo to Nuwara Eliya and Badulla daily with dedicated 1st AC and 2nd class reserved carriages',
       'Celebrated in Sri Lankan literature and song as the pride of the mountains',
     ],
-    imageUrl: 'https://images.unsplash.com/photo-1546874177-9e664107314e?q=80&w=800&auto=format&fit=crop',
+    imageUrl: '/images/udratamenikkei.jpeg',
   },
   {
     id: 'yal-devi',
@@ -789,7 +789,7 @@ export const LEGENDARY_TRAINS: LegendaryTrainProfile[] = [
       'Rebuilt in 2014 with modern high-speed continuous welded rail',
       'Equipped with modern air-conditioned carriages and buffet service',
     ],
-    imageUrl: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800&auto=format&fit=crop',
+    imageUrl: '/images/yaldevi.jpeg',
   },
   {
     id: 'uthaya-devi',
@@ -805,7 +805,7 @@ export const LEGENDARY_TRAINS: LegendaryTrainProfile[] = [
       'Scenic crossings over eastern river lagoons and paddy flatlands',
       'Daily morning express serving key agricultural and coastal communities',
     ],
-    imageUrl: 'https://images.unsplash.com/photo-1533050487297-09b450131914?q=80&w=800&auto=format&fit=crop',
+    imageUrl: '/images/udayadevi.jpeg',
   },
   {
     id: 'night-mail',
@@ -821,7 +821,7 @@ export const LEGENDARY_TRAINS: LegendaryTrainProfile[] = [
       'Unmatched sunrise over the southern plains viewed from Haputale at 05:45 AM',
       'Vital mail postal sorting car running through the heart of the central hills',
     ],
-    imageUrl: 'https://images.unsplash.com/photo-1517649763962-0c623266ddc0?q=80&w=800&auto=format&fit=crop',
+    imageUrl: '/images/night_mail.jpeg',
   },
   {
     id: 'rajarata-rajini',
@@ -837,7 +837,7 @@ export const LEGENDARY_TRAINS: LegendaryTrainProfile[] = [
       'Passes ancient artificial reservoirs (Wewas) built by ancient Sinhala kings',
       'Affordable 2nd & 3rd class express catering to pilgrims and university scholars',
     ],
-    imageUrl: 'https://images.unsplash.com/photo-1508873696983-2df5703bc249?q=80&w=800&auto=format&fit=crop',
+    imageUrl: '/images/rajataranjini.jpeg',
   },
   {
     id: 'samudra-devi',
@@ -852,7 +852,7 @@ export const LEGENDARY_TRAINS: LegendaryTrainProfile[] = [
       'Famous for refreshing ocean breezes and open-doorway commuter culture',
       'Connecting southern coastal commuters for over 60 years',
     ],
-    imageUrl: 'https://images.unsplash.com/photo-1566296517004-220eff94661b?q=80&w=800&auto=format&fit=crop',
+    imageUrl: '/images/galle.jpeg',
   },
   {
     id: 'ella-odyssey',
@@ -867,7 +867,7 @@ export const LEGENDARY_TRAINS: LegendaryTrainProfile[] = [
       'Observation decks with panoramic mountain views',
       'Luxury 1st AC and air-conditioned carriages',
     ],
-    imageUrl: 'https://images.unsplash.com/photo-1509749837427-ac94a2553d0e?q=80&w=800&auto=format&fit=crop',
+    imageUrl: '/images/ELLA-ODYSSEY.jpg',
   },
 ];
 

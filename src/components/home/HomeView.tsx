@@ -31,12 +31,12 @@ interface HomeViewProps {
 }
 
 const POPULAR_ROUTES = [
-  { from: 'Colombo Fort', to: 'Kandy', tag: 'Hill Capital', time: '2.5 hrs', img: 'https://images.unsplash.com/photo-1546874177-9e664107314e?q=80&w=600&auto=format&fit=crop' },
-  { from: 'Colombo Fort', to: 'Ella', tag: 'Nine Arch Bridge', time: '9.5 hrs', img: 'https://images.unsplash.com/photo-1588668214407-6ea9a6d8c272?q=80&w=600&auto=format&fit=crop' },
-  { from: 'Colombo Fort', to: 'Galle', tag: 'Coast & Fort', time: '2 hrs', img: 'https://images.unsplash.com/photo-1566296517004-220eff94661b?q=80&w=600&auto=format&fit=crop' },
-  { from: 'Colombo Fort', to: 'Jaffna', tag: 'Northern Realm', time: '6.5 hrs', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=600&auto=format&fit=crop' },
-  { from: 'Colombo Fort', to: 'Nanu Oya', tag: 'Nuwara Eliya Mist', time: '7 hrs', img: 'https://images.unsplash.com/photo-1509749837427-ac94a2553d0e?q=80&w=600&auto=format&fit=crop' },
-  { from: 'Colombo Fort', to: 'Trincomalee', tag: 'East Coast Surf', time: '7.5 hrs', img: 'https://images.unsplash.com/photo-1512100356356-de1b84283e18?q=80&w=600&auto=format&fit=crop' },
+  { from: 'Colombo Fort', to: 'Kandy', tag: 'Hill Capital', time: '2.5 hrs', img: '/images/kandy.jpeg' },
+  { from: 'Colombo Fort', to: 'Ella', tag: 'Nine Arch Bridge', time: '9.5 hrs', img: '/images/ella.jpeg' },
+  { from: 'Colombo Fort', to: 'Galle', tag: 'Coast & Fort', time: '2 hrs', img: '/images/galle.jpeg' },
+  { from: 'Colombo Fort', to: 'Jaffna', tag: 'Northern Realm', time: '6.5 hrs', img: '/images/yaldevi.jpeg' },
+  { from: 'Colombo Fort', to: 'Nanu Oya', tag: 'Nuwara Eliya Mist', time: '7 hrs', img: '/images/nanuoya.jpeg' },
+  { from: 'Colombo Fort', to: 'Trincomalee', tag: 'East Coast Surf', time: '7.5 hrs', img: '/images/trincomalee.jpeg' },
 ];
 
 export const HomeView: React.FC<HomeViewProps> = ({
@@ -322,6 +322,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 src={route.img}
                 alt={route.to}
                 className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
 

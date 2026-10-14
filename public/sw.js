@@ -5,6 +5,9 @@ const MAP_CACHE_NAME = 'ceylon-rail-map-data-v2';
 const CRITICAL_ASSETS = [
   '/',
   '/index.html',
+  '/logo.png',
+  '/favicon.png',
+  '/manifest.json',
   '/public/googlee23b95ba50fb8bc4.html'
 ];
 
@@ -57,7 +60,9 @@ self.addEventListener('fetch', (event) => {
     url.pathname.includes('station') ||
     url.pathname.endsWith('.svg') ||
     url.pathname.endsWith('.png') ||
-    url.pathname.endsWith('.jpg')
+    url.pathname.endsWith('.jpg') ||
+    url.pathname.endsWith('.jpeg') ||
+    url.pathname.includes('/images/')
   ) {
     event.respondWith(
       caches.open(MAP_CACHE_NAME).then((cache) => {

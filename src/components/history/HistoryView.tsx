@@ -32,20 +32,47 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
       <section className="bg-gradient-to-r from-[#173024] via-[#1E4332] to-[#14291F] text-white p-5 sm:p-6 rounded-2xl border border-[#2F523E] shadow-sm relative overflow-hidden">
         <div className="absolute top-0 right-0 w-48 h-48 bg-[#D4A359]/10 rounded-full blur-2xl pointer-events-none" />
 
-        <div className="flex items-center gap-2 mb-1.5">
-          <span className="text-[10px] font-mono uppercase tracking-widest text-[#D4A359] bg-[#D4A359]/20 px-2 py-0.5 rounded border border-[#D4A359]/30">
-            Heritage Archive
-          </span>
-          <span className="text-xs text-[#A7C2B3]">Ceylon Government Railway</span>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="space-y-1.5 flex-1">
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-[#D4A359] bg-[#D4A359]/20 px-2 py-0.5 rounded border border-[#D4A359]/30">
+                Heritage Archive
+              </span>
+              <span className="text-xs text-[#A7C2B3]">Ceylon Government Railway</span>
+            </div>
+
+            <h2 className="text-xl sm:text-2xl font-serif font-bold text-white tracking-wide">
+              160 Years of Ceylon Railway Heritage
+            </h2>
+
+            <p className="text-xs sm:text-sm text-[#CADFD3] max-w-xl leading-relaxed">
+              From the first steam locomotive puffing to Ambepussa in 1864, to conquering Kadugannawa Pass and raising the Demodara Nine Arch Bridge in the sky.
+            </p>
+          </div>
+
+          {/* Official Public Heritage Seal */}
+          <div className="shrink-0 flex items-center gap-3 bg-[#102219]/90 border border-[#D4A359]/40 p-2.5 rounded-2xl shadow-md">
+            <img
+              src="/logo.png"
+              alt="Ceylon Rail Heritage Logo"
+              className="w-14 h-14 object-cover rounded-xl border border-[#D4A359]/30 shadow-inner"
+              referrerPolicy="no-referrer"
+            />
+            <div className="pr-1 text-left">
+              <div className="font-serif font-bold text-xs text-[#E5ECE8]">Official Insignia</div>
+              <div className="text-[10px] text-[#D4A359] font-mono">Broad-Gauge Crest</div>
+              <a
+                href="/logo.png"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[10px] text-[#A7C2B3] hover:text-white underline inline-flex items-center gap-0.5 mt-0.5"
+              >
+                <span>View Public Logo</span>
+                <ExternalLink className="w-2.5 h-2.5" />
+              </a>
+            </div>
+          </div>
         </div>
-
-        <h2 className="text-xl sm:text-2xl font-serif font-bold text-white tracking-wide">
-          160 Years of Ceylon Railway Heritage
-        </h2>
-
-        <p className="text-xs sm:text-sm text-[#CADFD3] mt-1.5 max-w-xl leading-relaxed">
-          From the first steam locomotive puffing to Ambepussa in 1864, to conquering Kadugannawa Pass and raising the Demodara Nine Arch Bridge in the sky.
-        </p>
 
         {/* Tab Switcher */}
         <div className="flex items-center gap-2 mt-4 pt-3 border-t border-[#2B4E3B]">
@@ -88,6 +115,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
                     src={train.imageUrl}
                     alt={train.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    referrerPolicy="no-referrer"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
@@ -180,6 +208,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
                 src={selectedTrain.imageUrl}
                 alt={selectedTrain.name}
                 className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
 
