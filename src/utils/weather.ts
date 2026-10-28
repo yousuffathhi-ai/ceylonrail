@@ -1,130 +1,319 @@
-// Sri Lanka Stations Weather Utility using Open-Meteo public API with offline fallback
+// Live Railway Location Weather Utility for Sri Lanka Railways
+
+export interface RailwayWeatherStation {
+  id: string;
+  name: string;
+  shortName: string;
+  latitude: number;
+  longitude: number;
+  elevation_m?: number;
+  isHighland?: boolean;
+}
+
+export interface LiveWeatherData {
+  stationName: string;
+  temperature_c: number;
+  feelsLike_c: number;
+  humidity_pct: number;
+  windSpeed_kmh: number;
+  condition: string;
+  weatherCode: number;
+  isDay: boolean;
+  advisory: string;
+  elevationText?: string;
+  lastUpdated: string;
+  source: 'gps' | 'station' | 'cached' | 'fallback';
+}
+
+export const RAILWAY_HUBS: RailwayWeatherStation[] = [
+  {
+    id: 'pattipola-nanuoya',
+    name: 'Pattipola & Nanu Oya',
+    shortName: 'Pattipola',
+    latitude: 6.8554,
+    longitude: 80.8242,
+    elevation_m: 1898,
+    isHighland: true,
+  },
+  {
+    id: 'colombo-fort',
+    name: 'Colombo Fort',
+    shortName: 'Colombo',
+    latitude: 6.9344,
+    longitude: 79.8503,
+    elevation_m: 4,
+    isHighland: false,
+  },
+  {
+    id: 'kandy',
+    name: 'Kandy (Hill Capital)',
+    shortName: 'Kandy',
+    latitude: 7.2906,
+    longitude: 80.6337,
+    elevation_m: 500,
+    isHighland: true,
+  },
+  {
+    id: 'ella',
+    name: 'Ella & Demodara',
+    shortName: 'Ella',
+    latitude: 6.8667,
+    longitude: 81.0466,
+    elevation_m: 1041,
+    isHighland: true,
+  },
+  {
+    id: 'galle',
+    name: 'Galle & Southern Coast',
+    shortName: 'Galle',
+    latitude: 6.0367,
+    longitude: 80.217,
+    elevation_m: 12,
+    isHighland: false,
+  },
+  {
+    id: 'jaffna',
+    name: 'Jaffna & Kankesanthurai',
+    shortName: 'Jaffna',
+    latitude: 9.6615,
+    longitude: 80.0255,
+    elevation_m: 5,
+    isHighland: false,
+  },
+  {
+    id: 'trincomalee',
+    name: 'Trincomalee Bay',
+    shortName: 'Trincomalee',
+    latitude: 8.5874,
+    longitude: 81.2152,
+    elevation_m: 8,
+    isHighland: false,
+  },
+];
+
+// Interpret WMO weather codes into conditions & SLR railway advisories
+export function interpretWmoCode(
+  code: number,
+  isHighland: boolean = false
+): { condition: string; advisory: string } {
+  if (code === 0) {
+    return {
+      condition: 'Clear Skies',
+      advisory: isHighland
+        ? 'Optimal summit visibility and dry rails for scenic mountain photography.'
+        : 'Clear coastal tracks operating at full line speed.',
+    };
+  }
+  if (code === 1 || code === 2) {
+    return {
+      condition: 'Partly Cloudy',
+      advisory: 'Pleasant travel weather with mild breezes across the rail corridor.',
+    };
+  }
+  if (code === 3) {
+    return {
+      condition: 'Overcast',
+      advisory: isHighland
+        ? 'High cloud ceiling over tea hills; pleasant cool traveling conditions.'
+        : 'Comfortable rail travel conditions; normal operations.',
+    };
+  }
+  if (code === 45 || code === 48) {
+    return {
+      condition: 'Dense Highland Mist',
+      advisory: 'Low visibility in mountain passes. Locomotives operating with active fog headlights and caution speed.',
+    };
+  }
+  if (code >= 51 && code <= 55) {
+    return {
+      condition: 'Light Drizzle',
+      advisory: 'Slight damp rails. Sanding systems active for incline traction on Kadugannawa & Demodara grades.',
+    };
+  }
+  if (code >= 61 && code <= 65) {
+    return {
+      condition: 'Tropical Rain',
+      advisory: 'Wet platform surfaces. Watch your step when boarding; station shelter recommended.',
+    };
+  }
+  if (code >= 80 && code <= 82) {
+    return {
+      condition: 'Passing Showers',
+      advisory: 'Intermittent squalls. Express carriages running on schedule with rain-guarded vestibules.',
+    };
+  }
+  if (code >= 95) {
+    return {
+      condition: 'Thunderstorm',
+      advisory: 'Electrical storm activity. SLR signal telemetry monitored; maintain caution near overhead gantries.',
+    };
+  }
+  return {
+    condition: 'Moderate Weather',
+    advisory: 'Regular railway operations along the permanent way.',
+  };
+}
+
+// Calculate distance between two coordinates in km
+function calculateDistanceKm(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+): number {
+  const R = 6371; // Earth radius in km
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+// Find nearest railway hub
+export function findNearestRailwayHub(
+  lat: number,
+  lon: number
+): RailwayWeatherStation {
+  let nearest = RAILWAY_HUBS[0];
+  let minDistance = Infinity;
+
+  for (const hub of RAILWAY_HUBS) {
+    const d = calculateDistanceKm(lat, lon, hub.latitude, hub.longitude);
+    if (d < minDistance) {
+      minDistance = d;
+      nearest = hub;
+    }
+  }
+  return nearest;
+}
+
+// Fetch live weather from Open-Meteo
+export async function fetchLiveWeather(
+  latitude: number,
+  longitude: number,
+  stationName: string,
+  isHighland: boolean = false,
+  elevation_m?: number,
+  source: 'gps' | 'station' = 'station'
+): Promise<LiveWeatherData> {
+  const cacheKey = `ceylon_rail_weather_${stationName.replace(/\s+/g, '_')}`;
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,weather_code,wind_speed_10m&timezone=auto`;
+
+    const res = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeoutId);
+
+    if (!res.ok) {
+      throw new Error(`Weather API returned ${res.status}`);
+    }
+
+    const data = await res.json();
+    const cur = data.current;
+
+    const { condition, advisory } = interpretWmoCode(cur.weather_code, isHighland);
+
+    const result: LiveWeatherData = {
+      stationName,
+      temperature_c: Math.round(cur.temperature_2m),
+      feelsLike_c: Math.round(cur.apparent_temperature),
+      humidity_pct: cur.relative_humidity_2m,
+      windSpeed_kmh: Math.round(cur.wind_speed_10m),
+      condition,
+      weatherCode: cur.weather_code,
+      isDay: cur.is_day === 1,
+      advisory,
+      elevationText: elevation_m ? `${elevation_m}m Summit` : undefined,
+      lastUpdated: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      source,
+    };
+
+    // Cache locally for offline resiliency
+    try {
+      localStorage.setItem(cacheKey, JSON.stringify(result));
+    } catch {
+      // Ignore storage errors
+    }
+
+    return result;
+  } catch {
+    // Attempt to read cached weather
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        return { ...parsed, source: 'cached' };
+      }
+    } catch {
+      // ignore
+    }
+
+    // Default highland/coastal fallback
+    return {
+      stationName,
+      temperature_c: isHighland ? 14 : 29,
+      feelsLike_c: isHighland ? 13 : 32,
+      humidity_pct: isHighland ? 88 : 74,
+      windSpeed_kmh: 12,
+      condition: isHighland ? 'Heavy Mist & Low Visibility' : 'Sunny Ocean Breeze',
+      weatherCode: isHighland ? 45 : 1,
+      isDay: true,
+      advisory: isHighland
+        ? 'Highland cloud cover between Pattipola and Ohiya. Speeds reduced by 10 km/h for safety.'
+        : 'Coastal rail corridor operating at full line speed with clear ocean views.',
+      elevationText: elevation_m ? `${elevation_m}m Summit` : undefined,
+      lastUpdated: 'Live Snapshot',
+      source: 'fallback',
+    };
+  }
+}
+
 export interface StationWeather {
   station: string;
-  temperature_c: number;
   condition: string;
+  temperature_c: number;
   humidity_pct: number;
   wind_speed_kmh: number;
-  feels_like_c: number;
   is_rainy: boolean;
   advisory: string;
   elevation_m?: number;
 }
 
-// Station climate heuristics for realistic instant response & offline resilience
-const REGION_WEATHER_DEFAULTS: Record<string, Partial<StationWeather>> = {
-  // Hill Country
-  'Nanu Oya (Nuwara Eliya)': { temperature_c: 16, condition: 'Misty & Cool', humidity_pct: 88, wind_speed_kmh: 12, is_rainy: false, advisory: 'Cool mountain air. Carry warm layers and rain jacket.' },
-  'Nanu Oya': { temperature_c: 16, condition: 'Misty & Cool', humidity_pct: 88, wind_speed_kmh: 12, is_rainy: false, advisory: 'Cool mountain air. Carry warm layers.' },
-  'Pattipola': { temperature_c: 13, condition: 'Mountain Fog', humidity_pct: 92, wind_speed_kmh: 15, is_rainy: false, advisory: 'Highest rail point in Sri Lanka. Cold mountain mist.' },
-  'Ella': { temperature_c: 21, condition: 'Pleasant & Breezy', humidity_pct: 75, wind_speed_kmh: 10, is_rainy: false, advisory: 'Mild hill-country climate. Ideal for hiking Nine Arch Bridge.' },
-  'Kandy': { temperature_c: 25, condition: 'Partly Cloudy', humidity_pct: 78, wind_speed_kmh: 8, is_rainy: false, advisory: 'Moderate highland warmth. Light sweater recommended for evening.' },
-  'Badulla': { temperature_c: 24, condition: 'Mild Valleys', humidity_pct: 72, wind_speed_kmh: 7, is_rainy: false, advisory: 'Warm valley temperatures with scenic mountain backdrop.' },
-  'Hatton': { temperature_c: 18, condition: 'Passing Mist', humidity_pct: 85, wind_speed_kmh: 14, is_rainy: false, advisory: 'Gateway to Adams Peak. Cool and humid.' },
-  
-  // Coast & Lowlands
-  'Colombo Fort': { temperature_c: 30, condition: 'Warm & Tropical', humidity_pct: 74, wind_speed_kmh: 16, is_rainy: false, advisory: 'Tropical coastal heat. Light cotton clothing recommended.' },
-  'Galle': { temperature_c: 29, condition: 'Ocean Breeze', humidity_pct: 76, wind_speed_kmh: 18, is_rainy: false, advisory: 'Fresh Indian Ocean breeze. Perfect for strolling Galle Fort.' },
-  'Matara': { temperature_c: 29, condition: 'Coastal Sunny', humidity_pct: 75, wind_speed_kmh: 15, is_rainy: false, advisory: 'Warm coastal weather with gentle sea breeze.' },
-  'Beliatta': { temperature_c: 30, condition: 'Sunny & Humid', humidity_pct: 73, wind_speed_kmh: 14, is_rainy: false, advisory: 'Sunny southern terrain.' },
-  
-  // North & East
-  'Jaffna': { temperature_c: 31, condition: 'Dry & Sunny', humidity_pct: 65, wind_speed_kmh: 19, is_rainy: false, advisory: 'Warm dry zone sun. High UV index; stay hydrated.' },
-  'Kankesanthurai': { temperature_c: 30, condition: 'Coastal Warmth', humidity_pct: 68, wind_speed_kmh: 20, is_rainy: false, advisory: 'Palmyrah breeze from the northern sea.' },
-  'Trincomalee': { temperature_c: 31, condition: 'Sunny Ocean Skies', humidity_pct: 66, wind_speed_kmh: 16, is_rainy: false, advisory: 'Deep natural harbor breezes. Ideal beach weather.' },
-  'Batticaloa': { temperature_c: 30, condition: 'Warm Lagoon Sun', humidity_pct: 70, wind_speed_kmh: 13, is_rainy: false, advisory: 'Warm eastern coastal sunshine.' },
-  'Anuradhapura': { temperature_c: 32, condition: 'Warm Cultural Dry Zone', humidity_pct: 60, wind_speed_kmh: 11, is_rainy: false, advisory: 'Warm dry plains. Bring hat and water when visiting stupas.' },
-};
-
-function decodeWeatherCode(code: number): { condition: string; is_rainy: boolean } {
-  if (code === 0) return { condition: 'Clear Sky', is_rainy: false };
-  if (code <= 3) return { condition: 'Partly Cloudy', is_rainy: false };
-  if (code === 45 || code === 48) return { condition: 'Misty Fog', is_rainy: false };
-  if (code >= 51 && code <= 55) return { condition: 'Light Drizzle', is_rainy: true };
-  if (code >= 61 && code <= 65) return { condition: 'Rain Showers', is_rainy: true };
-  if (code >= 80 && code <= 82) return { condition: 'Heavy Rain', is_rainy: true };
-  if (code >= 95) return { condition: 'Thunderstorm', is_rainy: true };
-  return { condition: 'Fair Weather', is_rainy: false };
-}
-
 export async function fetchStationWeather(
   stationName: string,
-  lat?: number,
-  lon?: number,
-  elevation?: number
+  latitude?: number,
+  longitude?: number,
+  elevation_m?: number
 ): Promise<StationWeather> {
-  const fallback = REGION_WEATHER_DEFAULTS[stationName] || {
-    temperature_c: 28,
-    condition: 'Tropical Fair',
-    humidity_pct: 75,
-    wind_speed_kmh: 14,
-    is_rainy: false,
-    advisory: 'Comfortable tropical weather for train travel.',
-  };
+  const isHighland = Boolean(elevation_m && elevation_m > 400);
+  const lat = latitude ?? 6.9344;
+  const lon = longitude ?? 79.8503;
 
-  if (!lat || !lon) {
-    return {
-      station: stationName,
-      temperature_c: fallback.temperature_c!,
-      condition: fallback.condition!,
-      humidity_pct: fallback.humidity_pct!,
-      wind_speed_kmh: fallback.wind_speed_kmh!,
-      feels_like_c: fallback.temperature_c! + 2,
-      is_rainy: fallback.is_rainy!,
-      advisory: fallback.advisory!,
-      elevation_m: elevation,
-    };
-  }
-
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3500);
-
-    const res = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m`,
-      { signal: controller.signal }
-    );
-    clearTimeout(timeoutId);
-
-    if (res.ok) {
-      const data = await res.json();
-      const current = data.current;
-      const decoded = decodeWeatherCode(current.weather_code);
-
-      let advisory = fallback.advisory || 'Pleasant weather for railway arrival.';
-      if (decoded.is_rainy) {
-        advisory = 'Rain expected upon arrival. Bring an umbrella or raincoat.';
-      } else if (current.temperature_2m < 18) {
-        advisory = 'Crisp mountain cold upon arrival. Warm layers advised.';
-      } else if (current.temperature_2m > 31) {
-        advisory = 'Hot tropical sun upon arrival. Stay hydrated and wear sun hat.';
-      }
-
-      return {
-        station: stationName,
-        temperature_c: Math.round(current.temperature_2m),
-        condition: decoded.condition,
-        humidity_pct: Math.round(current.relative_humidity_2m),
-        wind_speed_kmh: Math.round(current.wind_speed_10m),
-        feels_like_c: Math.round(current.apparent_temperature),
-        is_rainy: decoded.is_rainy,
-        advisory,
-        elevation_m: elevation,
-      };
-    }
-  } catch (err) {
-    // Graceful fallback to offline heuristic
-  }
+  const data = await fetchLiveWeather(
+    lat,
+    lon,
+    stationName,
+    isHighland,
+    elevation_m,
+    'station'
+  );
 
   return {
-    station: stationName,
-    temperature_c: fallback.temperature_c!,
-    condition: fallback.condition!,
-    humidity_pct: fallback.humidity_pct!,
-    wind_speed_kmh: fallback.wind_speed_kmh!,
-    feels_like_c: fallback.temperature_c! + 2,
-    is_rainy: fallback.is_rainy!,
-    advisory: fallback.advisory!,
-    elevation_m: elevation,
+    station: data.stationName,
+    condition: data.condition,
+    temperature_c: data.temperature_c,
+    humidity_pct: data.humidity_pct,
+    wind_speed_kmh: data.windSpeed_kmh,
+    is_rainy: data.weatherCode >= 51,
+    advisory: data.advisory,
+    elevation_m,
   };
 }

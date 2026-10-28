@@ -3,12 +3,17 @@ import { Bell, Volume2, X, Train, Clock, ArrowRight } from 'lucide-react';
 import { playStationChime } from '../../utils/notifications';
 
 export interface ActiveAlertData {
-  trainName: string;
-  trainId: string;
-  origin: string;
-  destination: string;
-  departureTime: string;
-  minutesRemaining: number;
+  trainName?: string;
+  trainId?: string;
+  origin?: string;
+  destination?: string;
+  departureTime?: string;
+  minutesRemaining?: number;
+  train_name?: string;
+  train_id?: string;
+  departure_station?: string;
+  departure_time?: string;
+  minutes_until?: number;
 }
 
 interface DepartureAlertBannerProps {
@@ -23,6 +28,12 @@ export const DepartureAlertBanner: React.FC<DepartureAlertBannerProps> = ({
   onViewTrain,
 }) => {
   if (!alert) return null;
+
+  const tName = alert.trainName || alert.train_name || 'Scheduled Train';
+  const tId = alert.trainId || alert.train_id || '';
+  const depStation = alert.origin || alert.departure_station || 'Station';
+  const depTime = alert.departureTime || alert.departure_time || '';
+  const mins = alert.minutesRemaining ?? alert.minutes_until ?? 0;
 
   return (
     <div className="fixed top-3 left-3 right-3 sm:left-auto sm:right-6 sm:max-w-md z-50 animate-bounceIn shadow-2xl">
@@ -46,12 +57,12 @@ export const DepartureAlertBanner: React.FC<DepartureAlertBannerProps> = ({
             </div>
 
             <h4 className="font-serif font-bold text-sm sm:text-base text-white mt-0.5">
-              {alert.trainName} (#{alert.trainId})
+              {tName} {tId ? `(#${tId})` : ''}
             </h4>
 
             <p className="text-xs text-[#C6D8CE] mt-0.5">
-              Departs from <strong className="text-white">{alert.origin}</strong> at{' '}
-              <strong className="text-[#D4A359] font-mono">{alert.departureTime}</strong> ({alert.minutesRemaining} min remaining).
+              Departs from <strong className="text-white">{depStation}</strong> at{' '}
+              <strong className="text-[#D4A359] font-mono">{depTime}</strong> ({mins} min remaining).
             </p>
 
             <div className="mt-3 flex items-center gap-2">

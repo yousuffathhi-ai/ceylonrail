@@ -1,5 +1,18 @@
 import { TrainSchedule, SeatClass } from '../types';
 
+export function getTodayDateString(d: Date = new Date()): string {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+export function getTomorrowDateString(d: Date = new Date()): string {
+  const next = new Date(d);
+  next.setDate(next.getDate() + 1);
+  return getTodayDateString(next);
+}
+
 /**
  * Formats a date string 'YYYY-MM-DD' and time 'HH:MM' into Google Calendar UTC/Local ISO format
  */

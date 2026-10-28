@@ -23,14 +23,13 @@ import {
 import { TRAIN_SCHEDULES } from './data/timetableData';
 import { checkUpcomingSavedDepartures, playStationChime, sendBrowserNotification } from './utils/notifications';
 import { getStoredTheme, saveTheme, applyThemeToDOM } from './utils/theme';
+import { getTodayDateString } from './utils/calendar';
 
 export default function App() {
   const [language, setLanguage] = useState<Language>('en');
   const [theme, setTheme] = useState<AppTheme>(getStoredTheme);
-  const [currentTab, setCurrentTab] = useState<NavTab>('home');
-  const [travelDate, setTravelDate] = useState<string>(
-    () => new Date().toISOString().split('T')[0]
-  );
+  const [activeTab, setActiveTab] = useState<NavTab>('home');
+  const [travelDate, setTravelDate] = useState<string>(() => getTodayDateString());
 
   // Search parameters when transitioning from Home / Map
   const [searchFrom, setSearchFrom] = useState<string>('');
@@ -74,6 +73,12 @@ export default function App() {
       const upcoming = checkUpcomingSavedDepartures();
       if (upcoming) {
         setActiveAlert({
+          trainId: upcoming.journey.train_id,
+          trainName: upcoming.journey.train_name,
+          origin: upcoming.journey.from_station,
+          destination: upcoming.journey.to_station,
+          departureTime: upcoming.journey.departure_time,
+          minutesRemaining: upcoming.minutesUntil,
           train_id: upcoming.journey.train_id,
           train_name: upcoming.journey.train_name,
           departure_station: upcoming.journey.from_station,
@@ -105,21 +110,21 @@ export default function App() {
     setTravelDate(date);
     setSearchLine('All');
     addRecentSearch(from, to, date);
-    setCurrentTab('search');
+    setActiveTab('search');
   };
 
   const handleExploreLine = (line: string) => {
     setSearchLine(line as RailwayLine);
     setSearchFrom('');
     setSearchTo('');
-    setCurrentTab('search');
+    setActiveTab('search');
   };
 
   const handleSelectStationFromMap = (station: Station) => {
     setSearchFrom(station.name_en);
     setSearchTo('');
     setSearchLine('All');
-    setCurrentTab('search');
+    setActiveTab('search');
   };
 
   const handleExploreTrainByName = (name: string) => {
@@ -129,7 +134,7 @@ export default function App() {
     } else {
       setSearchFrom('');
       setSearchTo('');
-      setCurrentTab('search');
+      setActiveTab('search');
     }
   };
 
@@ -162,9 +167,9 @@ export default function App() {
         />
       )}
 
-      {/* Main View Container */}
-      <main className="flex-1 max-w-5xl w-full mx-auto px-3 sm:px-6 pt-4">
-        {currentTab === 'home' && (
+      {/* Main View Container with Dynamic Tab-Based View Switching */}
+      <main className="flex-1 max-w-5xl w-full mx-auto px-3 sm:px-6 pt-4 pb-20">
+        {activeTab === 'home' && (
           <HomeView
             language={language}
             onSearchTrains={handleSearchTrains}
@@ -175,7 +180,7 @@ export default function App() {
           />
         )}
 
-        {currentTab === 'search' && (
+        {activeTab === 'search' && (
           <SearchView
             language={language}
             initialFrom={searchFrom}
@@ -187,7 +192,7 @@ export default function App() {
           />
         )}
 
-        {currentTab === 'map' && (
+        {(activeTab === 'route-map' || activeTab === 'map') && (
           <InteractiveMapView
             language={language}
             onSelectStation={handleSelectStationFromMap}
@@ -195,14 +200,14 @@ export default function App() {
           />
         )}
 
-        {currentTab === 'history' && (
+        {(activeTab === 'heritage' || activeTab === 'history') && (
           <HistoryView
             language={language}
             onExploreTrain={handleExploreTrainByName}
           />
         )}
 
-        {currentTab === 'saved' && (
+        {activeTab === 'saved' && (
           <SavedView
             language={language}
             onSelectTrain={(train) => setSelectedTrain(train)}
@@ -241,6 +246,10 @@ export default function App() {
             setIsTripPlannerOpen(false);
             setSelectedTrain(train);
           }}
+          onSearchSegment={(from, to) => {
+            setIsTripPlannerOpen(false);
+            handleSearchTrains(from, to, travelDate);
+          }}
         />
       )}
 
@@ -262,10 +271,10 @@ export default function App() {
         />
       )}
 
-      {/* Fixed Bottom Navigation (Mobile-first 5 tabs) */}
+      {/* Fixed Bottom Navigation (Mobile-first 5 tabs: Home, Search, Route Map, Heritage, Saved) */}
       <BottomNav
-        currentTab={currentTab}
-        onSelectTab={setCurrentTab}
+        activeTab={activeTab}
+        onSelectTab={setActiveTab}
         language={language}
         savedCount={savedCount}
       />

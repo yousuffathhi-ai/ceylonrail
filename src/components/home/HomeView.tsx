@@ -20,6 +20,7 @@ import { STATIONS, TRAIN_SCHEDULES } from '../../data/timetableData';
 import { WeatherWidget } from '../common/WeatherWidget';
 import { getRecentSearches } from '../../utils/offlineStorage';
 import { TravelTipsSection } from './TravelTipsSection';
+import { getTodayDateString, getTomorrowDateString } from '../../utils/calendar';
 
 interface HomeViewProps {
   language: Language;
@@ -53,10 +54,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
   const [fromCode, setFromCode] = useState('FOT'); // Colombo Fort
   const [toCode, setToCode] = useState('ELL'); // Ella
   
-  const todayStr = new Date().toISOString().split('T')[0];
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const tomorrowStr = tomorrow.toISOString().split('T')[0];
+  const todayStr = getTodayDateString();
+  const tomorrowStr = getTomorrowDateString();
 
   const [date, setDate] = useState(todayStr);
   const [recentSearches, setRecentSearches] = useState<{ id: string; from: string; to: string; date?: string }[]>([]);
@@ -170,13 +169,13 @@ export const HomeView: React.FC<HomeViewProps> = ({
             </div>
           </div>
 
-          {/* Date Selector Row */}
-          <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-            <div className="flex items-center gap-1.5">
+          {/* Date Selector Row with Horizontal Gap Spacing */}
+          <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+            <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
               <button
                 type="button"
                 onClick={() => setDate(todayStr)}
-                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors border ${
+                className={`min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all border active:scale-95 shadow-xs ${
                   date === todayStr
                     ? 'bg-[#173024] text-white border-[#173024]'
                     : 'bg-[#EAE3D5] text-[#4A463F] border-[#D6CDBC] hover:bg-[#DDD5C5]'
@@ -188,7 +187,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
               <button
                 type="button"
                 onClick={() => setDate(tomorrowStr)}
-                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors border ${
+                className={`min-h-[38px] px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all border active:scale-95 shadow-xs ${
                   date === tomorrowStr
                     ? 'bg-[#173024] text-white border-[#173024]'
                     : 'bg-[#EAE3D5] text-[#4A463F] border-[#D6CDBC] hover:bg-[#DDD5C5]'
@@ -197,19 +196,46 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 {t.tomorrow}
               </button>
 
-              <div className="relative">
-                <input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="bg-[#EAE3D5] text-[#24211C] border border-[#D6CDBC] px-2.5 py-1 rounded-full text-xs outline-none cursor-pointer focus:border-[#758A80]"
-                />
-              </div>
+              {(() => {
+                const isCustom = date !== todayStr && date !== tomorrowStr;
+                return (
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <div
+                      className={`min-h-[38px] flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold shadow-xs transition-colors border select-none pointer-events-none ${
+                        isCustom
+                          ? 'bg-[#173024] text-white border-[#173024]'
+                          : 'bg-[#EAE3D5] text-[#24211C] border-[#D6CDBC] hover:border-[#758A80]'
+                      }`}
+                    >
+                      <Calendar className={`w-3.5 h-3.5 ${isCustom ? 'text-[#D4A359]' : 'text-[#B8863A]'}`} />
+                      <span>
+                        {(() => {
+                          if (!date) return 'Select Date';
+                          const parts = date.split('-');
+                          return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : date;
+                        })()}
+                      </span>
+                    </div>
+                    <input
+                      type="date"
+                      value={date}
+                      onChange={(e) => setDate(e.target.value)}
+                      onClick={(e) => {
+                        try {
+                          (e.target as HTMLInputElement).showPicker?.();
+                        } catch {}
+                      }}
+                      className="absolute inset-0 z-10 opacity-0 cursor-pointer w-full h-full"
+                      title="Select departure date"
+                    />
+                  </label>
+                );
+              })()}
             </div>
 
             <button
               type="submit"
-              className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-[#173024] hover:bg-[#234534] text-[#F4F0EA] font-semibold text-xs sm:text-sm px-6 py-2.5 rounded-xl shadow-sm transition-all transform active:scale-98"
+              className="flex-1 sm:flex-none min-h-[40px] flex items-center justify-center gap-2 bg-[#173024] hover:bg-[#234534] text-[#F4F0EA] font-semibold text-xs sm:text-sm px-6 py-2 rounded-xl shadow-sm transition-all transform active:scale-98"
             >
               <Search className="w-4 h-4 text-[#D4A359]" />
               <span>{t.findTrains}</span>
@@ -276,7 +302,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
         {/* Quick Destination Switches */}
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-1 text-xs">
           <span className="text-[11px] text-[#7A7468] shrink-0 font-medium">Quick Preview:</span>
-          {['KND', 'ELL', 'GLE', 'JAF', 'TRM', 'BAD', 'NNO'].map((code) => {
+          {['KND', 'ELL', 'GLE', 'JAF', 'TCO', 'BDL', 'NOY'].map((code) => {
             const st = STATIONS.find((s) => s.code === code);
             if (!st) return null;
             const isSelected = toCode === code;

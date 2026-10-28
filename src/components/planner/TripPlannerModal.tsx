@@ -24,6 +24,7 @@ interface TripPlannerModalProps {
   onClose: () => void;
   language: Language;
   onSearchSegment?: (from: string, to: string) => void;
+  onSelectTrain?: (train: TrainSchedule) => void;
 }
 
 interface CuratedTrip {
@@ -71,6 +72,7 @@ export const TripPlannerModal: React.FC<TripPlannerModalProps> = ({
   onClose,
   language,
   onSearchSegment,
+  onSelectTrain,
 }) => {
   // Itinerary stops state
   const [selectedStationCodes, setSelectedStationCodes] = useState<string[]>([
@@ -455,9 +457,18 @@ export const TripPlannerModal: React.FC<TripPlannerModalProps> = ({
                             <strong>{segmentAfter.distanceKm.toFixed(1)} km</strong> (~{Math.floor(segmentAfter.estimatedMinutes / 60)}h {segmentAfter.estimatedMinutes % 60}m)
                           </span>
                           {segmentAfter.connectingTrain && (
-                            <span className="bg-[#D9EFE3] text-[#194D31] px-2 py-0.5 rounded text-[10px] font-semibold">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (onSelectTrain && segmentAfter.connectingTrain) {
+                                  onSelectTrain(segmentAfter.connectingTrain);
+                                }
+                              }}
+                              className="bg-[#D9EFE3] hover:bg-[#C5E8D4] text-[#194D31] px-2 py-0.5 rounded text-[10px] font-semibold cursor-pointer transition-colors shadow-2xs"
+                              title="Click to view train details"
+                            >
                               #{segmentAfter.connectingTrain.train_id} {segmentAfter.connectingTrain.train_name}
-                            </span>
+                            </button>
                           )}
                         </div>
 

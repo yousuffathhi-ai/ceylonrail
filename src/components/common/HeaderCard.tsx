@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Train,
   CloudSun,
+  CloudFog,
   Bot,
   Sparkles,
   AlertCircle,
@@ -22,6 +23,13 @@ import { Language, AppTheme } from '../../types';
 import { translations } from '../../data/localization';
 import { LIVE_WEATHER_ALERTS } from '../../data/timetableData';
 import { DelayState } from '../../utils/offlineStorage';
+import { LiveWeatherModal } from '../weather/LiveWeatherModal';
+import {
+  RAILWAY_HUBS,
+  RailwayWeatherStation,
+  LiveWeatherData,
+  fetchLiveWeather,
+} from '../../utils/weather';
 
 interface HeaderCardProps {
   language: Language;
@@ -49,8 +57,31 @@ export const HeaderCard: React.FC<HeaderCardProps> = ({
   onToggleDelay,
 }) => {
   const t = translations[language];
-  const activeWeather = LIVE_WEATHER_ALERTS[0]; // Colombo Fort
   const isDelayed = delayState !== 'ON_TIME';
+
+  // Live Weather State (Default: Pattipola & Nanu Oya summit)
+  const defaultHub = RAILWAY_HUBS[0]; // Pattipola & Nanu Oya
+  const [currentWeatherHub, setCurrentWeatherHub] = useState<RailwayWeatherStation>(defaultHub);
+  const [liveWeather, setLiveWeather] = useState<LiveWeatherData | null>(null);
+  const [isWeatherModalOpen, setIsWeatherModalOpen] = useState(false);
+
+  // Initialize weather on mount
+  useEffect(() => {
+    let isMounted = true;
+    fetchLiveWeather(
+      defaultHub.latitude,
+      defaultHub.longitude,
+      defaultHub.name,
+      defaultHub.isHighland,
+      defaultHub.elevation_m,
+      'station'
+    ).then((data) => {
+      if (isMounted) setLiveWeather(data);
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const [isLogoModalOpen, setIsLogoModalOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -62,89 +93,114 @@ export const HeaderCard: React.FC<HeaderCardProps> = ({
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleSelectWeatherStation = (station: RailwayWeatherStation, data: LiveWeatherData) => {
+    setCurrentWeatherHub(station);
+    setLiveWeather(data);
+  };
+
   return (
     <header className="relative w-full bg-[#173024] text-[#F4F0EA] border-b border-[#2A4B3A] shadow-md transition-colors">
       {/* Subtle vintage railway rail line accent on top */}
       <div className="h-1 w-full bg-gradient-to-r from-[#D4A359] via-[#758A80] to-[#D4A359]" />
 
-      <div className="max-w-5xl mx-auto px-4 py-4 sm:px-6">
-        {/* Top Status Bar: Weather + Language Switcher + Theme Toggle + Delay Status */}
-        <div className="flex items-center justify-between gap-2 text-xs text-[#C5D1CA] pb-3 border-b border-[#244233]">
-          {/* Weather Ticker & Live Delay Status */}
-          <div className="flex items-center gap-2 overflow-hidden">
-            <span className="flex items-center gap-1 bg-[#102219] px-2.5 py-1 rounded-full text-[11px] border border-[#2D4D3D] text-[#E5ECE8] font-medium">
-              <CloudSun className="w-3.5 h-3.5 text-[#D4A359]" />
-              <span className="font-semibold text-white">{activeWeather.station}</span>
-              <span>{activeWeather.temp_c}°C</span>
-              <span className="hidden sm:inline text-[#9FB5A9]">({activeWeather.condition})</span>
-            </span>
-
-            {/* Delay simulator toggle with subtle pulse animation when delayed */}
+      <div className="max-w-5xl mx-auto px-3.5 sm:px-6 py-3.5 sm:py-4">
+        {/* Top Status Bar: Station Weather + Delay Status + Night Mode + Language Switcher */}
+        {/* Responsive flex-wrap with generous touch targets and spacing */}
+        <div className="flex flex-wrap items-center justify-between gap-y-2.5 gap-x-2 text-xs text-[#C5D1CA] pb-3 mb-1 border-b border-[#244233]">
+          {/* Left Controls: Station Weather Ticker & Delay Telemetry */}
+          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+            {/* Live Location Weather Button */}
             <button
+              type="button"
+              onClick={() => setIsWeatherModalOpen(true)}
+              className="min-h-[38px] flex items-center gap-2 bg-[#102219] hover:bg-[#163023] px-3 py-1.5 rounded-full text-xs border border-[#2D4D3D] text-[#E5ECE8] font-medium transition-all shadow-xs active:scale-95 cursor-pointer group"
+              title="Click to view live railway weather & GPS location telemetry"
+            >
+              <div className="relative flex items-center justify-center">
+                <CloudSun className="w-4 h-4 text-[#D4A359] group-hover:rotate-12 transition-transform" />
+                <span className="absolute -top-1 -right-1 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              </div>
+              <span className="font-semibold text-white tracking-tight">
+                {liveWeather ? liveWeather.stationName : currentWeatherHub.name}
+              </span>
+              <span className="bg-[#1E3B2D] text-[#9FE8BC] font-mono font-bold px-1.5 py-0.5 rounded text-[11px]">
+                {liveWeather ? `${liveWeather.temperature_c}°C` : '12°C'}
+              </span>
+              <span className="hidden md:inline text-[11px] text-[#A7C2B3]">
+                ({liveWeather ? liveWeather.condition : 'Cloud Forest'})
+              </span>
+            </button>
+
+            {/* Delay simulator toggle with comfortable touch target and pulse indicator */}
+            <button
+              type="button"
               onClick={onToggleDelay}
-              className={`relative flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] transition-all border ${
+              className={`min-h-[38px] flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs transition-all border active:scale-95 shadow-xs cursor-pointer ${
                 !isDelayed
                   ? 'bg-[#183B29] border-[#316548] text-[#9FE8BC] hover:bg-[#1E4833]'
-                  : 'bg-[#472615] border-[#D97706] text-[#FCD34D] hover:bg-[#59301B] animate-delay-pulse shadow-xs shadow-amber-500/20'
+                  : 'bg-[#472615] border-[#D97706] text-[#FCD34D] hover:bg-[#59301B] animate-delay-pulse shadow-amber-500/20'
               }`}
               title="Click to toggle simulated live delay telemetry"
             >
               {!isDelayed ? (
                 <>
-                  <CheckCircle2 className="w-3 h-3 text-[#52D288]" />
-                  <span>SLR: On-Time</span>
+                  <CheckCircle2 className="w-3.5 h-3.5 text-[#52D288]" />
+                  <span className="font-semibold">SLR: On-Time</span>
                 </>
               ) : (
                 <>
-                  <span className="relative flex h-2 w-2">
+                  <span className="relative flex h-2.5 w-2.5">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F59E0B] opacity-80" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F59E0B]" />
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#F59E0B]" />
                   </span>
-                  <AlertCircle className="w-3 h-3 text-[#F59E0B]" />
-                  <span className="font-semibold">Track Advisory (+10m)</span>
+                  <AlertCircle className="w-3.5 h-3.5 text-[#F59E0B]" />
+                  <span className="font-bold">Track Advisory (+10m)</span>
                 </>
               )}
             </button>
           </div>
 
-          {/* Right Controls: Theme Toggle & Language Switcher */}
-          <div className="flex items-center gap-2">
+          {/* Right Controls: Night Mode Toggle & Language Selectors */}
+          <div className="flex items-center gap-2 sm:gap-2.5">
             {/* Night Rail Mode Theme Switcher */}
             {onToggleTheme && (
               <button
+                type="button"
                 onClick={onToggleTheme}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium transition-all border ${
+                className={`min-h-[38px] flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all border active:scale-95 shadow-xs ${
                   theme === 'night'
-                    ? 'bg-[#E5B25D] text-[#0E1612] border-[#F2C97D] font-bold shadow-xs'
+                    ? 'bg-[#E5B25D] text-[#0E1612] border-[#F2C97D] font-bold'
                     : 'bg-[#102219] text-[#C5D1CA] border-[#2A4736] hover:text-white hover:bg-[#183325]'
                 }`}
                 title={theme === 'night' ? 'Switch to Vintage Parchment Mode' : 'Switch to High-Contrast Night Rail Mode'}
               >
                 {theme === 'night' ? (
                   <>
-                    <Sun className="w-3 h-3 text-[#0E1612]" />
-                    <span className="hidden sm:inline">Night Mode</span>
+                    <Sun className="w-3.5 h-3.5 text-[#0E1612]" />
+                    <span className="text-xs">Night Mode</span>
                   </>
                 ) : (
                   <>
-                    <Moon className="w-3 h-3 text-[#D4A359]" />
-                    <span className="hidden sm:inline">Night Mode</span>
+                    <Moon className="w-3.5 h-3.5 text-[#D4A359]" />
+                    <span className="text-xs">Night Mode</span>
                   </>
                 )}
               </button>
             )}
 
-            {/* Language Switcher */}
-            <div className="flex items-center bg-[#0E1F17] rounded-full p-0.5 border border-[#274535]">
+            {/* Language Switcher with comfortable tap targets */}
+            <div className="min-h-[38px] flex items-center bg-[#0E1F17] rounded-full p-1 border border-[#274535] gap-1 shadow-xs">
               {(['en', 'si', 'ta'] as Language[]).map((lang) => (
                 <button
                   key={lang}
+                  type="button"
                   onClick={() => onLanguageChange(lang)}
-                  className={`px-2 py-0.5 rounded-full text-[11px] font-medium transition-all ${
+                  className={`min-h-[30px] min-w-[34px] px-2.5 py-1 rounded-full text-xs font-medium transition-all flex items-center justify-center ${
                     language === lang
-                      ? 'bg-[#758A80] text-[#FFFFFF] shadow-xs font-semibold'
-                      : 'text-[#9FB5A9] hover:text-white'
+                      ? 'bg-[#758A80] text-white shadow-xs font-bold'
+                      : 'text-[#9FB5A9] hover:text-white hover:bg-[#173024]'
                   }`}
+                  title={lang === 'en' ? 'English' : lang === 'si' ? 'Sinhala' : 'Tamil'}
                 >
                   {lang === 'en' ? 'EN' : lang === 'si' ? 'සිං' : 'த'}
                 </button>
@@ -367,6 +423,14 @@ export const HeaderCard: React.FC<HeaderCardProps> = ({
           </div>
         </div>
       )}
+
+      {/* Live Railway Location Weather Modal */}
+      <LiveWeatherModal
+        isOpen={isWeatherModalOpen}
+        onClose={() => setIsWeatherModalOpen(false)}
+        currentStationId={currentWeatherHub.id}
+        onSelectStation={handleSelectWeatherStation}
+      />
     </header>
   );
 };

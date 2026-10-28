@@ -62,6 +62,19 @@ export const SearchView: React.FC<SearchViewProps> = ({
   const [selectedForCompare, setSelectedForCompare] = useState<string[]>([]);
   const [isComparing, setIsComparing] = useState(false);
 
+  // Synchronize when search parameters change from other views (Home, Map, Planner)
+  useEffect(() => {
+    if (initialFrom !== undefined) setFromQuery(initialFrom);
+  }, [initialFrom]);
+
+  useEffect(() => {
+    if (initialTo !== undefined) setToQuery(initialTo);
+  }, [initialTo]);
+
+  useEffect(() => {
+    if (initialLine !== undefined) setSelectedLine(initialLine);
+  }, [initialLine]);
+
   // Voice Search State
   const [isListening, setIsListening] = useState<'from' | 'to' | 'both' | null>(null);
   const [voiceTranscript, setVoiceTranscript] = useState<string | null>(null);
@@ -226,20 +239,50 @@ export const SearchView: React.FC<SearchViewProps> = ({
         if (timeFilter === 'Night' && (hour < 17 && hour >= 5)) return false;
       }
 
-      // Filter by From
-      if (fromQuery.trim()) {
-        const fq = fromQuery.toLowerCase();
-        const matchesOrigin = train.origin.toLowerCase().includes(fq);
-        const matchesStop = train.stops.some((st) => st.station_name.toLowerCase().includes(fq));
-        if (!matchesOrigin && !matchesStop) return false;
-      }
+      // Directional Route Filtering (From -> To in sequence)
+      if (fromQuery.trim() && toQuery.trim()) {
+        const fq = fromQuery.toLowerCase().trim();
+        const tq = toQuery.toLowerCase().trim();
 
-      // Filter by To
-      if (toQuery.trim()) {
-        const tq = toQuery.toLowerCase();
-        const matchesDest = train.destination.toLowerCase().includes(tq);
-        const matchesStop = train.stops.some((st) => st.station_name.toLowerCase().includes(tq));
-        if (!matchesDest && !matchesStop) return false;
+        const fromIdx = train.stops.findIndex(
+          (st) =>
+            st.station_name.toLowerCase().includes(fq) ||
+            st.station_code.toLowerCase() === fq
+        );
+        const toIdx = train.stops.findIndex(
+          (st) =>
+            st.station_name.toLowerCase().includes(tq) ||
+            st.station_code.toLowerCase() === tq
+        );
+
+        // Both stops must exist along this train route AND from must come before to
+        if (fromIdx === -1 || toIdx === -1 || fromIdx >= toIdx) {
+          return false;
+        }
+      } else {
+        // Filter by From only
+        if (fromQuery.trim()) {
+          const fq = fromQuery.toLowerCase().trim();
+          const matchesOrigin = train.origin.toLowerCase().includes(fq);
+          const matchesStop = train.stops.some(
+            (st) =>
+              st.station_name.toLowerCase().includes(fq) ||
+              st.station_code.toLowerCase() === fq
+          );
+          if (!matchesOrigin && !matchesStop) return false;
+        }
+
+        // Filter by To only
+        if (toQuery.trim()) {
+          const tq = toQuery.toLowerCase().trim();
+          const matchesDest = train.destination.toLowerCase().includes(tq);
+          const matchesStop = train.stops.some(
+            (st) =>
+              st.station_name.toLowerCase().includes(tq) ||
+              st.station_code.toLowerCase() === tq
+          );
+          if (!matchesDest && !matchesStop) return false;
+        }
       }
 
       return true;
