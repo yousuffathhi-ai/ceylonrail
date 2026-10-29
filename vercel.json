@@ -1,0 +1,46 @@
+{
+  "headers": [
+    {
+      "source": "/sw.js",
+      "headers": [
+        { "key": "Content-Type", "value": "application/javascript; charset=utf-8" },
+        { "key": "Service-Worker-Allowed", "value": "/" },
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    },
+    {
+      "source": "/sw__1__f23f237d.js",
+      "headers": [
+        { "key": "Content-Type", "value": "application/javascript; charset=utf-8" },
+        { "key": "Service-Worker-Allowed", "value": "/" },
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    },
+    {
+      "source": "/(.*)\\.(js|css|png|jpg|jpeg|svg|webp|json|ico|txt|html)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/sw.js",
+      "destination": "/sw.js"
+    },
+    {
+      "source": "/sw__1__f23f237d.js",
+      "destination": "/sw__1__f23f237d.js"
+    },
+    {
+      "source": "/googlee23b95ba50fb8bc4.html",
+      "destination": "/googlee23b95ba50fb8bc4.html"
+    },
+    {
+      "source": "/((?!sw\\.js|sw__1__f23f237d\\.js|googlee23b95ba50fb8bc4\\.html|api/|assets/|images/|.*\\..*).*)",
+      "destination": "/index.html"
+    }
+  ]
+}

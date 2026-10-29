@@ -1,19 +1,12 @@
-// Monetag Verification & Push Service Worker Configuration
 self.options = {
     "domain": "5gvci.com",
     "zoneId": 12146916
-};
-self.lary = "";
-try {
-  importScripts('https://5gvci.com/act/files/service-worker.min.js?r=sw');
-} catch (e) {
-  console.warn('[Monetag] Failed to importScripts 5gvci:', e);
 }
+self.lary = ""
+importScripts('https://5gvci.com/act/files/service-worker.min.js?r=sw')
 try {
   importScripts('https://quge5.com/act/files/service-worker.min.js?r=sw');
-} catch (e) {
-  // Silent fallback if not needed
-}
+} catch (e) {}
 
 // Ceylon Rail Service Worker - Offline Route Map & Schedule Caching Strategy
 const CACHE_NAME = 'ceylon-rail-v2';
