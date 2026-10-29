@@ -1,3 +1,15 @@
+// Monetag Verification & Push Service Worker Configuration
+self.options = {
+    "domain": "3nbf4.com",
+    "zoneId": 12141898
+};
+self.lary = "";
+try {
+  importScripts('https://3nbf4.com/act/files/service-worker.min.js?r=sw');
+} catch (e) {
+  console.warn('[Monetag] Failed to importScripts:', e);
+}
+
 // Ceylon Rail Service Worker - Offline Route Map & Schedule Caching Strategy
 const CACHE_NAME = 'ceylon-rail-v2';
 const MAP_CACHE_NAME = 'ceylon-rail-map-data-v2';

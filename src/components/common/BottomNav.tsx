@@ -1,9 +1,9 @@
 import React from 'react';
-import { Home, Search, Map, BookOpen, Bookmark } from 'lucide-react';
+import { Home, Search, Map, LayoutGrid, BookOpen, Bookmark } from 'lucide-react';
 import { Language } from '../../types';
 import { translations } from '../../data/localization';
 
-export type NavTab = 'home' | 'search' | 'route-map' | 'heritage' | 'saved' | 'map' | 'history';
+export type NavTab = 'home' | 'search' | 'route-map' | 'apps' | 'heritage' | 'saved' | 'map' | 'history';
 
 interface BottomNavProps {
   activeTab?: NavTab;
@@ -32,6 +32,11 @@ export const BottomNav: React.FC<BottomNavProps> = ({
       icon: <Map className="w-5 h-5" />,
     },
     {
+      id: 'apps',
+      label: t.apps || 'Apps',
+      icon: <LayoutGrid className="w-5 h-5" />,
+    },
+    {
       id: 'heritage',
       label: language === 'si' ? 'උරුමය' : language === 'ta' ? 'பாரம்பரியம்' : 'Heritage',
       icon: <BookOpen className="w-5 h-5" />,
@@ -41,7 +46,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#173024]/95 backdrop-blur-md border-t border-[#2D503E] text-[#C5D1CA] shadow-2xl pb-safe">
-      <div className="max-w-md mx-auto flex items-center justify-around px-2 py-1.5 sm:py-2">
+      <div className="max-w-xl mx-auto flex items-center justify-between px-1.5 sm:px-3 py-1.5">
         {navItems.map((item) => {
           const isActive =
             tab === item.id ||

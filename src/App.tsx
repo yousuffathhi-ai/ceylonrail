@@ -6,6 +6,7 @@ import { SearchView } from './components/search/SearchView';
 import { InteractiveMapView } from './components/map/InteractiveMapView';
 import { HistoryView } from './components/history/HistoryView';
 import { SavedView } from './components/saved/SavedView';
+import { AppsView } from './components/apps/AppsView';
 import { TrainDetailModal } from './components/search/TrainDetailModal';
 import { FareCalculatorModal } from './components/fare/FareCalculatorModal';
 import { GeminiConductorModal } from './components/ai/GeminiConductorModal';
@@ -53,6 +54,13 @@ export default function App() {
   const updateSavedCount = () => {
     setSavedCount(getBookmarks().length);
   };
+
+  // Single-URL SPA Architecture: Guarantee browser URL remains strictly on the base domain
+  useEffect(() => {
+    if (window.location.pathname !== '/' && window.location.pathname !== '') {
+      window.history.replaceState(null, '', '/');
+    }
+  }, []);
 
   useEffect(() => {
     applyThemeToDOM(theme);
@@ -167,53 +175,76 @@ export default function App() {
         />
       )}
 
-      {/* Main View Container with Dynamic Tab-Based View Switching */}
+      {/* Main View Container with Single-URL State-Based Dynamic View Switching */}
       <main className="flex-1 max-w-5xl w-full mx-auto px-3 sm:px-6 pt-4 pb-20">
         {activeTab === 'home' && (
-          <HomeView
-            language={language}
-            onSearchTrains={handleSearchTrains}
-            onSelectTrain={(train) => setSelectedTrain(train)}
-            onExploreLine={handleExploreLine}
-            onOpenFareCalc={() => setIsFareCalcOpen(true)}
-            onOpenConductor={() => setIsConductorOpen(true)}
-          />
+          <div key="home" className="animate-fadeIn">
+            <HomeView
+              language={language}
+              onSearchTrains={handleSearchTrains}
+              onSelectTrain={(train) => setSelectedTrain(train)}
+              onExploreLine={handleExploreLine}
+              onOpenFareCalc={() => setIsFareCalcOpen(true)}
+              onOpenConductor={() => setIsConductorOpen(true)}
+            />
+          </div>
         )}
 
         {activeTab === 'search' && (
-          <SearchView
-            language={language}
-            initialFrom={searchFrom}
-            initialTo={searchTo}
-            initialLine={searchLine}
-            travelDate={travelDate}
-            onSelectTrain={(train) => setSelectedTrain(train)}
-            onBookmarkChanged={updateSavedCount}
-          />
+          <div key="search" className="animate-fadeIn">
+            <SearchView
+              language={language}
+              initialFrom={searchFrom}
+              initialTo={searchTo}
+              initialLine={searchLine}
+              travelDate={travelDate}
+              onSelectTrain={(train) => setSelectedTrain(train)}
+              onBookmarkChanged={updateSavedCount}
+            />
+          </div>
         )}
 
         {(activeTab === 'route-map' || activeTab === 'map') && (
-          <InteractiveMapView
-            language={language}
-            onSelectStation={handleSelectStationFromMap}
-            onSelectTrain={(train) => setSelectedTrain(train)}
-          />
+          <div key="route-map" className="animate-fadeIn">
+            <InteractiveMapView
+              language={language}
+              onSelectStation={handleSelectStationFromMap}
+              onSelectTrain={(train) => setSelectedTrain(train)}
+            />
+          </div>
+        )}
+
+        {activeTab === 'apps' && (
+          <div key="apps" className="animate-fadeIn">
+            <AppsView
+              language={language}
+              onOpenPlanner={() => setIsTripPlannerOpen(true)}
+              onOpenFareCalc={() => setIsFareCalcOpen(true)}
+              onOpenConductor={() => setIsConductorOpen(true)}
+              onOpenPlatformHelper={() => setIsPlatformHelperOpen(true)}
+              onNavigateToTab={(tab) => setActiveTab(tab)}
+            />
+          </div>
         )}
 
         {(activeTab === 'heritage' || activeTab === 'history') && (
-          <HistoryView
-            language={language}
-            onExploreTrain={handleExploreTrainByName}
-          />
+          <div key="heritage" className="animate-fadeIn">
+            <HistoryView
+              language={language}
+              onExploreTrain={handleExploreTrainByName}
+            />
+          </div>
         )}
 
         {activeTab === 'saved' && (
-          <SavedView
-            language={language}
-            onSelectTrain={(train) => setSelectedTrain(train)}
-            onRerunSearch={(from, to, date) => handleSearchTrains(from, to, date)}
-            onBookmarkChanged={updateSavedCount}
-          />
+          <div key="saved" className="animate-fadeIn">
+            <SavedView
+              language={language}
+              onSelectTrain={(train) => setSelectedTrain(train)}
+              onRerunSearch={(from, to, date) => handleSearchTrains(from, to, date)}
+              onBookmarkChanged={updateSavedCount}
+            />
+          </div>
         )}
       </main>
 

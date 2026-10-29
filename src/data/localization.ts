@@ -6,6 +6,7 @@ export interface Translations {
   home: string;
   search: string;
   map: string;
+  apps: string;
   history: string;
   saved: string;
   from: string;
@@ -61,6 +62,7 @@ export const translations: Record<Language, Translations> = {
     home: 'Home',
     search: 'Search',
     map: 'Route Map',
+    apps: 'Apps',
     history: 'Heritage',
     saved: 'Saved',
     from: 'From Station',
@@ -114,6 +116,7 @@ export const translations: Record<Language, Translations> = {
     home: 'මුල් පිටුව',
     search: 'සොයන්න',
     map: 'සිතියම',
+    apps: 'සේවා',
     history: 'ඉතිහාසය',
     saved: 'සුරැකි',
     from: 'ආරම්භක දුම්රිය ස්ථානය',
@@ -167,6 +170,7 @@ export const translations: Record<Language, Translations> = {
     home: 'முகப்பு',
     search: 'தேடல்',
     map: 'வரைபடம்',
+    apps: 'செயலிகள்',
     history: 'வரலாறு',
     saved: 'சேமித்தவை',
     from: 'புறப்படும் நிலையம்',

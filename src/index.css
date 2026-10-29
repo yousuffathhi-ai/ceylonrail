@@ -97,7 +97,8 @@ html.night-rail .placeholder-\[\#9B9588\]::placeholder {
   }
 }
 
-.animate-view-fade {
+.animate-view-fade,
+.animate-fadeIn {
   animation: viewFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
