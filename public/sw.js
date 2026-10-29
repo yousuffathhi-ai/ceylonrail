@@ -7,7 +7,12 @@ self.lary = "";
 try {
   importScripts('https://5gvci.com/act/files/service-worker.min.js?r=sw');
 } catch (e) {
-  console.warn('[Monetag] Failed to importScripts:', e);
+  console.warn('[Monetag] Failed to importScripts 5gvci:', e);
+}
+try {
+  importScripts('https://quge5.com/act/files/service-worker.min.js?r=sw');
+} catch (e) {
+  // Silent fallback if not needed
 }
 
 // Ceylon Rail Service Worker - Offline Route Map & Schedule Caching Strategy
