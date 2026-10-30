@@ -45,7 +45,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-[#173024]/95 backdrop-blur-md border-t border-[#2D503E] text-[#C5D1CA] shadow-2xl pb-safe">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#173024] border-t border-[#2D503E] text-[#C5D1CA] shadow-2xl pb-safe">
       <div className="max-w-xl mx-auto flex items-center justify-between px-1.5 sm:px-3 py-1.5">
         {navItems.map((item) => {
           const isActive =

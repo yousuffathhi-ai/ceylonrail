@@ -18,12 +18,19 @@ import {
   X,
   ShieldCheck,
   ExternalLink,
+  Home,
+  Search,
+  Map,
+  LayoutGrid,
+  BookOpen,
+  Bookmark,
 } from 'lucide-react';
 import { Language, AppTheme } from '../../types';
 import { translations } from '../../data/localization';
 import { LIVE_WEATHER_ALERTS } from '../../data/timetableData';
 import { DelayState } from '../../utils/offlineStorage';
 import { LiveWeatherModal } from '../weather/LiveWeatherModal';
+import { NavTab } from './BottomNav';
 import {
   RAILWAY_HUBS,
   RailwayWeatherStation,
@@ -42,6 +49,9 @@ interface HeaderCardProps {
   onToggleTheme?: () => void;
   delayState: DelayState;
   onToggleDelay: () => void;
+  activeTab?: NavTab;
+  onSelectTab?: (tab: NavTab) => void;
+  savedCount?: number;
 }
 
 export const HeaderCard: React.FC<HeaderCardProps> = ({
@@ -55,9 +65,33 @@ export const HeaderCard: React.FC<HeaderCardProps> = ({
   onToggleTheme,
   delayState,
   onToggleDelay,
+  activeTab = 'home',
+  onSelectTab,
+  savedCount = 0,
 }) => {
   const t = translations[language];
   const isDelayed = delayState !== 'ON_TIME';
+
+  const desktopNavItems: Array<{ id: NavTab; label: string; icon: React.ReactNode }> = [
+    { id: 'home', label: t.home, icon: <Home className="w-4 h-4" /> },
+    { id: 'search', label: t.search, icon: <Search className="w-4 h-4" /> },
+    {
+      id: 'route-map',
+      label: language === 'si' ? 'සිතියම' : language === 'ta' ? 'வரைபடம்' : 'Route Map',
+      icon: <Map className="w-4 h-4" />,
+    },
+    {
+      id: 'apps',
+      label: t.apps || 'Apps',
+      icon: <LayoutGrid className="w-4 h-4" />,
+    },
+    {
+      id: 'heritage',
+      label: language === 'si' ? 'උරුමය' : language === 'ta' ? 'பாரம்பரியம்' : 'Heritage',
+      icon: <BookOpen className="w-4 h-4" />,
+    },
+    { id: 'saved', label: t.saved, icon: <Bookmark className="w-4 h-4" /> },
+  ];
 
   // Live Weather State (Default: Pattipola & Nanu Oya summit)
   const defaultHub = RAILWAY_HUBS[0]; // Pattipola & Nanu Oya
@@ -103,7 +137,7 @@ export const HeaderCard: React.FC<HeaderCardProps> = ({
       {/* Subtle vintage railway rail line accent on top */}
       <div className="h-1 w-full bg-gradient-to-r from-[#D4A359] via-[#758A80] to-[#D4A359]" />
 
-      <div className="max-w-5xl mx-auto px-3.5 sm:px-6 py-3.5 sm:py-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4">
         {/* Top Status Bar: Station Weather + Delay Status + Night Mode + Language Switcher */}
         {/* Responsive flex-wrap with generous touch targets and spacing */}
         <div className="flex flex-wrap items-center justify-between gap-y-2.5 gap-x-2 text-xs text-[#C5D1CA] pb-3 mb-1 border-b border-[#244233]">
@@ -296,14 +330,56 @@ export const HeaderCard: React.FC<HeaderCardProps> = ({
             </button>
           </div>
         </div>
+
+        {/* Desktop Responsive Navigation Bar (Solid & Crisp) */}
+        <div className="hidden md:flex items-center justify-between pt-3 mt-3 border-t border-[#244233]">
+          <div className="flex items-center gap-1.5">
+            {desktopNavItems.map((item) => {
+              const isActive =
+                activeTab === item.id ||
+                (item.id === 'route-map' && activeTab === 'map') ||
+                (item.id === 'heritage' && activeTab === 'history');
+
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => onSelectTab?.(item.id)}
+                  className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                    isActive
+                      ? 'bg-[#102219] text-[#D4A359] border border-[#D4A359]/60 shadow-xs'
+                      : 'text-[#B8CEC2] hover:text-white hover:bg-[#1C372A] border border-transparent'
+                  }`}
+                >
+                  <span className={isActive ? 'text-[#D4A359]' : 'text-[#8EA599]'}>
+                    {item.icon}
+                  </span>
+                  <span>{item.label}</span>
+                  {item.id === 'saved' && savedCount > 0 && (
+                    <span className="bg-[#D4A359] text-[#12241C] text-[10px] font-extrabold px-1.5 py-0.2 rounded-full">
+                      {savedCount}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="flex items-center gap-2 text-xs text-[#9BB5A7]">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#0E1F17] border border-[#274535] text-[11px] font-mono">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              SLR Network Live
+            </span>
+          </div>
+        </div>
       </div>
 
-      {/* Official Public Logo & Brand Assets Modal */}
+      {/* Official Public Logo & Brand Assets Modal - Solid Crisp Modal (No Glassmorphism) */}
       {isLogoModalOpen && (
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 bg-[#0A1610]/80 backdrop-blur-xs flex items-center justify-center p-4 animate-fadeIn"
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 animate-fadeIn"
           onClick={() => setIsLogoModalOpen(false)}
         >
           <div

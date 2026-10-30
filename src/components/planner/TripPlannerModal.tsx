@@ -253,7 +253,7 @@ export const TripPlannerModal: React.FC<TripPlannerModalProps> = ({
   }, [selectedStationCodes]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 backdrop-blur-xs p-2 sm:p-4 overflow-y-auto animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-2 sm:p-4 overflow-y-auto animate-fadeIn">
       <div className="relative w-full max-w-3xl bg-[#FDFBF7] rounded-2xl shadow-2xl border border-[#D8CEBA] max-h-[92vh] flex flex-col overflow-hidden text-[#1F2923]">
         {/* Header */}
         <div className="bg-[#173024] text-[#F4F0EA] p-4 sm:p-5 relative border-b border-[#2A4E3B] flex items-center justify-between">

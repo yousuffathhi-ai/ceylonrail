@@ -375,7 +375,7 @@ export const PlatformHelperModal: React.FC<PlatformHelperModalProps> = ({
   const isNearby = distanceToStation !== null && distanceToStation >= 250 && distanceToStation < 2000;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-xs p-0 sm:p-4 overflow-y-auto animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/75 p-0 sm:p-4 overflow-y-auto animate-fadeIn">
       <div className="relative w-full max-w-2xl bg-[#FDFBF7] rounded-t-2xl sm:rounded-2xl shadow-2xl border border-[#E0D7C6] max-h-[92vh] flex flex-col overflow-hidden text-[#1F2923]">
         {/* Modal Header */}
         <div className="bg-[#173024] text-[#F4F0EA] p-4 sm:p-5 relative border-b border-[#2B4E3C]">

@@ -154,7 +154,7 @@ export const GeminiConductorModal: React.FC<GeminiConductorModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 backdrop-blur-xs p-2 sm:p-4 animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-2 sm:p-4 animate-fadeIn">
       <div className="relative w-full max-w-xl bg-[#FDFBF7] rounded-2xl shadow-2xl border border-[#DFD6C4] h-[88vh] flex flex-col overflow-hidden text-[#1F2923]">
         {/* Modal Header */}
         <div className="bg-[#173024] text-[#F4F0EA] p-3.5 sm:p-4 flex items-center justify-between border-b border-[#2A4C3A]">

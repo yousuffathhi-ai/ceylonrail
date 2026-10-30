@@ -325,11 +325,14 @@ export const SearchView: React.FC<SearchViewProps> = ({
 
   return (
     <div className="space-y-4 pb-20 animate-fadeIn">
-      {/* Search and Filters Header Card */}
-      <section className="bg-[#FAF7F2] rounded-2xl p-4 sm:p-5 border border-[#DFD5C2] shadow-sm space-y-3.5">
-        {/* Origin / Destination Search Inputs with Predictive Dropdown */}
-        <div className="grid grid-cols-1 sm:grid-cols-[1fr,auto,1fr] gap-2 items-center">
-          <div className="relative bg-[#F2ECE0] p-2.5 rounded-xl border border-[#D5CAA4]/70 focus-within:border-[#758A80] transition-colors">
+      {/* Desktop Responsive 2-Column Split Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left Column: Search & Filter Panel (Sticky on Desktop) */}
+        <div className="lg:col-span-5 xl:col-span-4 space-y-4 lg:sticky lg:top-4">
+          <section className="bg-[#FAF7F2] rounded-2xl p-4 sm:p-5 border border-[#DFD5C2] shadow-sm space-y-3.5">
+            {/* Origin / Destination Search Inputs with Predictive Dropdown */}
+            <div className="grid grid-cols-1 sm:grid-cols-[1fr,auto,1fr] gap-2 items-center">
+              <div className="relative bg-[#F2ECE0] p-2.5 rounded-xl border border-[#D5CAA4]/70 focus-within:border-[#758A80] transition-colors">
             <PredictiveStationInput
               label={t.from}
               value={fromQuery}
@@ -500,8 +503,22 @@ export const SearchView: React.FC<SearchViewProps> = ({
         </div>
       </section>
 
-      {/* Results Header */}
-      <div className="flex items-center justify-between px-1 text-xs text-[#6A655C]">
+          {/* Authentic Scenic Window Advice Card (Desktop helper) */}
+          <div className="hidden lg:block bg-[#173024] text-[#F4F0EA] p-4 rounded-2xl border border-[#2B4E3B] shadow-sm space-y-2">
+            <div className="flex items-center gap-2 text-xs text-[#D4A359] font-bold uppercase tracking-wider font-mono">
+              <Train className="w-4 h-4 text-[#D4A359]" />
+              <span>Scenic Seat Selector</span>
+            </div>
+            <p className="text-xs text-[#CBD8D1] leading-relaxed">
+              Main Line hill climbs (Colombo ➔ Kandy ➔ Ella): Book <strong className="text-white">Right-hand seats</strong> for St. Clair & Devon waterfalls; switch to <strong className="text-white">Left-hand</strong> for Demodara Loop & Nine Arch Bridge.
+            </p>
+          </div>
+        </div>
+
+        {/* Right Column: Train Schedule Results (7/12 on lg, 8/12 on xl) */}
+        <div className="lg:col-span-7 xl:col-span-8 space-y-3.5">
+          {/* Results Header */}
+          <div className="flex items-center justify-between px-1 text-xs text-[#6A655C] pb-1 border-b border-[#E8E1D3]">
         <div className="font-semibold text-[#173024]">
           {filteredTrains.length} {filteredTrains.length === 1 ? 'train' : 'trains'} scheduled
         </div>
@@ -681,6 +698,8 @@ export const SearchView: React.FC<SearchViewProps> = ({
           })
         )}
       </div>
+    </div>
+  </div>
 
       {/* Sticky Bottom Comparison Floating Dock */}
       {selectedForCompare.length > 0 && (

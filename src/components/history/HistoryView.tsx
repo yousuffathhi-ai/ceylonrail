@@ -119,7 +119,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-                  <div className="absolute top-3 left-3 bg-[#173024]/90 backdrop-blur-xs text-[#D4A359] font-mono text-[10px] font-bold px-2.5 py-1 rounded-full border border-[#D4A359]/30">
+                  <div className="absolute top-3 left-3 bg-[#173024] text-[#D4A359] font-mono text-[10px] font-bold px-2.5 py-1 rounded-full border border-[#D4A359]/50 shadow-xs">
                     {train.train_numbers}
                   </div>
 
@@ -201,7 +201,7 @@ export const HistoryView: React.FC<HistoryViewProps> = ({
 
       {/* Train Profile Detail Modal */}
       {selectedTrain && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 backdrop-blur-xs p-3 sm:p-4 animate-fadeIn">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-3 sm:p-4 animate-fadeIn">
           <div className="relative w-full max-w-lg bg-[#FAF7F2] rounded-2xl shadow-2xl border border-[#DFD5C2] overflow-hidden flex flex-col max-h-[90vh]">
             <div className="relative h-56 w-full">
               <img

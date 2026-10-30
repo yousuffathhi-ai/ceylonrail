@@ -815,7 +815,7 @@ export const InteractiveMapView: React.FC<InteractiveMapViewProps> = ({
 
         {/* Selected Station Inspection Card */}
         {selectedStation && (
-          <div className="absolute bottom-3 left-3 right-3 sm:left-auto sm:right-3 sm:w-80 bg-[#FAF7F2]/95 backdrop-blur-md p-4 rounded-2xl border-2 border-[#173024] shadow-2xl text-xs space-y-2.5 animate-fadeIn z-20">
+          <div className="absolute bottom-3 left-3 right-3 sm:left-auto sm:right-3 sm:w-80 bg-[#FAF7F2] p-4 rounded-2xl border-2 border-[#173024] shadow-2xl text-xs space-y-2.5 animate-fadeIn z-20">
             {/* Header badges */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1.5">

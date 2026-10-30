@@ -141,7 +141,7 @@ export const LiveWeatherModal: React.FC<LiveWeatherModalProps> = ({
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 bg-[#0A1610]/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-fadeIn"
+      className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-3 sm:p-4 animate-fadeIn"
       onClick={onClose}
     >
       <div

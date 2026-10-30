@@ -62,6 +62,21 @@ export default function App() {
     }
   }, []);
 
+  // Dynamic Head Title Management for SEO & View Tracking
+  useEffect(() => {
+    const titles: Record<NavTab, string> = {
+      home: 'Ceylon Rail – Sri Lanka Railways Timetable & Travel Companion',
+      search: 'Search Trains & Timetables – Ceylon Rail',
+      'route-map': 'Interactive Route Map & Lines – Ceylon Rail',
+      map: 'Interactive Route Map & Lines – Ceylon Rail',
+      apps: 'Official Railway Apps & Services – Ceylon Rail',
+      heritage: 'Legendary Trains & SLR Heritage Archive – Ceylon Rail',
+      history: 'Legendary Trains & SLR Heritage Archive – Ceylon Rail',
+      saved: 'Saved Schedules & Bookmarks – Ceylon Rail',
+    };
+    document.title = titles[activeTab] || 'Ceylon Rail – Sri Lanka Railways Timetable & Travel Companion';
+  }, [activeTab]);
+
   useEffect(() => {
     applyThemeToDOM(theme);
   }, [theme]);
@@ -160,6 +175,9 @@ export default function App() {
         onToggleTheme={handleToggleTheme}
         delayState={delayState}
         onToggleDelay={handleToggleDelay}
+        activeTab={activeTab}
+        onSelectTab={setActiveTab}
+        savedCount={savedCount}
       />
 
       {/* 15-Minute Local Departure Alert Banner */}
@@ -175,8 +193,8 @@ export default function App() {
         />
       )}
 
-      {/* Main View Container with Single-URL State-Based Dynamic View Switching */}
-      <main className="flex-1 max-w-5xl w-full mx-auto px-3 sm:px-6 pt-4 pb-20">
+      {/* Main View Container with Responsive Desktop Width */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-24 md:pb-12">
         {activeTab === 'home' && (
           <div key="home" className="animate-fadeIn">
             <HomeView
@@ -302,7 +320,83 @@ export default function App() {
         />
       )}
 
-      {/* Fixed Bottom Navigation (Mobile-first 5 tabs: Home, Search, Route Map, Heritage, Saved) */}
+      {/* Modern Responsive Solid Footer */}
+      <footer className="w-full bg-[#173024] text-[#C5D1CA] border-t border-[#2A4B3A] mt-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 pb-8 border-b border-[#244233]">
+            {/* Branding & Mission */}
+            <div className="md:col-span-2 space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[#12241C] border border-[#D4A359]/70 flex items-center justify-center p-0.5">
+                  <img src="/logo.png" alt="Ceylon Rail" className="w-full h-full object-cover rounded-lg" />
+                </div>
+                <div>
+                  <h3 className="font-serif font-bold text-base text-white">Ceylon Rail</h3>
+                  <p className="text-[11px] text-[#A7C2B3]">Sri Lanka Railways Commuter Companion & Heritage Archive</p>
+                </div>
+              </div>
+              <p className="text-xs text-[#9BB5A7] max-w-md leading-relaxed">
+                Empowering travelers and commuters across Sri Lanka with offline timetables, real distance fare matrices, elevation telemetry, and route maps since British Ceylon 1864.
+              </p>
+              <div className="flex items-center gap-2 pt-1 text-[11px] font-mono text-[#D4A359]">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>Offline SQLite Timetable Cached & Verified</span>
+              </div>
+            </div>
+
+            {/* Quick Rail Navigation */}
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-white mb-3 font-mono">
+                Rail Navigation
+              </h4>
+              <ul className="space-y-2 text-xs">
+                <li><button onClick={() => setActiveTab('home')} className="hover:text-white transition-colors cursor-pointer">Home Overview</button></li>
+                <li><button onClick={() => setActiveTab('search')} className="hover:text-white transition-colors cursor-pointer">Find Trains & Schedules</button></li>
+                <li><button onClick={() => setActiveTab('route-map')} className="hover:text-white transition-colors cursor-pointer">Interactive Route Map</button></li>
+                <li><button onClick={() => setActiveTab('heritage')} className="hover:text-white transition-colors cursor-pointer">Legendary Trains & History</button></li>
+                <li><button onClick={() => setActiveTab('saved')} className="hover:text-white transition-colors cursor-pointer">Saved Bookmarks ({savedCount})</button></li>
+              </ul>
+            </div>
+
+            {/* Emergency & Official Helplines */}
+            <div>
+              <h4 className="text-xs font-bold uppercase tracking-wider text-white mb-3 font-mono">
+                Emergency & Assistance
+              </h4>
+              <ul className="space-y-2 text-xs text-[#CBD8D1]">
+                <li className="flex items-center justify-between">
+                  <span>Railway Control:</span>
+                  <a href="tel:1971" className="font-mono font-bold text-[#D4A359] hover:underline">1971</a>
+                </li>
+                <li className="flex items-center justify-between">
+                  <span>Tourist Police:</span>
+                  <a href="tel:1912" className="font-mono font-bold text-[#D4A359] hover:underline">1912</a>
+                </li>
+                <li className="flex items-center justify-between">
+                  <span>Suwa Seriya Ambulance:</span>
+                  <a href="tel:1990" className="font-mono font-bold text-[#D4A359] hover:underline">1990</a>
+                </li>
+                <li className="flex items-center justify-between">
+                  <span>Police Emergency:</span>
+                  <a href="tel:119" className="font-mono font-bold text-[#D4A359] hover:underline">119</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom Disclaimer & Status */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-[#7A9988]">
+            <p>© {new Date().getFullYear()} Ceylon Rail. Sri Lanka Railways unofficial commuter guide & travel companion.</p>
+            <div className="flex items-center gap-4">
+              <span>PWA Offline Ready</span>
+              <span>•</span>
+              <span>No-Tracking Privacy</span>
+            </div>
+          </div>
+        </div>
+      </footer>
+
+      {/* Fixed Bottom Navigation (Mobile screens only, solid styling) */}
       <BottomNav
         activeTab={activeTab}
         onSelectTab={setActiveTab}

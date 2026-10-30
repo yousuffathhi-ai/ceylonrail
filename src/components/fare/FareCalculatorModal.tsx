@@ -109,7 +109,7 @@ export const FareCalculatorModal: React.FC<FareCalculatorModalProps> = ({
   const fares = calculateFares(distanceKm);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-3 sm:p-4 overflow-y-auto animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-3 sm:p-4 overflow-y-auto animate-fadeIn">
       <div className="relative w-full max-w-lg bg-[#FDFBF7] rounded-2xl shadow-2xl border border-[#DFD6C4] flex flex-col overflow-hidden text-[#1F2923]">
         {/* Header */}
         <div className="bg-[#173024] text-[#F4F0EA] p-4 sm:p-5 flex items-center justify-between border-b border-[#2A4C3A]">
